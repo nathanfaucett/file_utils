@@ -1,0 +1,31 @@
+{
+  "name": "file_utils",
+  "version": "0.0.1",
+  "description": "file utils for node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanfaucett/file_utils.git"
+  },
+  "main": "src/index.js",
+  "keywords": [
+    "utils",
+    "utils.js",
+    "file_utils",
+    "file_utils.js",
+    "fileUtils",
+    "file",
+    "fileutils",
+    "file-utils"
+  ],
+  "author": "Nathan Faucett",
+  "license": "BSD-2-Clause",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "",
+    "grunt-jsbeautifier": ""
+  },
+  "dependencies": {
+    "file_path": "nathanfaucett/file_path",
+    "utils": "nathanfaucett/utils"
+  }
+}
