@@ -35,12 +35,12 @@ fileUtils.dive = function(dir, opts, action, complete) {
     (function doDive(dir) {
 
         fs.readdir(dir, function(err, files) {
+            todo--;
+
             if (err) {
                 action(err);
                 return;
             }
-
-            todo--;
 
             utils.each(files, function(file) {
                 if (opts.all || file[0] !== ".") {
@@ -58,10 +58,17 @@ fileUtils.dive = function(dir, opts, action, complete) {
 
                     if (stat) {
                         if (stat.isDirectory()) {
-                            if (opts.directories) return action(null, fullPath) !== false;
+                            if (opts.directories) {
+                                todo--;
+                                return action(null, fullPath) !== false;
+                            }
                             if (opts.recursive) doDive(fullPath);
                         } else {
-                            if (opts.files) return action(null, fullPath) !== false;
+                            if (opts.files) {
+                                todo--;
+                                return action(null, fullPath) !== false;
+                            }
+                            if (!--todo) complete();
                         }
                     }
 
@@ -88,13 +95,14 @@ fileUtils.diveSync = function(dir, opts, action) {
     utils.mixin(opts, fileUtils.diveDefaults);
 
     (function doDive(dir) {
+        todo--;
+
         try {
             files = fs.readdirSync(dir);
         } catch (err) {
             action(err);
             return;
         }
-        todo--;
 
         utils.each(files, function(file) {
             if (opts.all || file[0] !== ".") {
@@ -112,10 +120,17 @@ fileUtils.diveSync = function(dir, opts, action) {
 
                 if (stat) {
                     if (stat.isDirectory()) {
-                        if (opts.directories) return action(null, fullPath) !== false;
+                        if (opts.directories) {
+                            todo--;
+                            return action(null, fullPath) !== false;
+                        }
                         if (opts.recursive) doDive(fullPath);
                     } else {
-                        if (opts.files) return action(null, fullPath) !== false;
+                        if (opts.files) {
+                            todo--;
+                            return action(null, fullPath) !== false;
+                        }
+                        if (!--todo) complete();
                     }
                 }
 
