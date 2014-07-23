@@ -6,7 +6,7 @@ var fs = require("fs"),
 var fileUtils = module.exports;
 
 
-fileUtils.diveDefaultOpts = {
+fileUtils.diveDefaults = {
     all: false,
     recursive: true,
     files: true,
@@ -30,7 +30,7 @@ fileUtils.dive = function dive(dir, opts, action, complete) {
     }
     if (!utils.isString(dir)) dir = process.cwd();
 
-    utils.mixin(opts, fileUtils.diveDefaultOpts);
+    utils.mixin(opts, fileUtils.diveDefaults);
 
     (function doDive(dir) {
 
@@ -85,7 +85,7 @@ fileUtils.diveSync = function dive(dir, opts, action) {
     }
     if (!utils.isString(dir)) dir = process.cwd();
 
-    utils.mixin(opts, fileUtils.diveDefaultOpts);
+    utils.mixin(opts, fileUtils.diveDefaults);
 
     (function doDive(dir) {
         try {
