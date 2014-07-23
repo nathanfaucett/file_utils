@@ -13,7 +13,7 @@ fileUtils.diveDefaults = {
     directories: false
 };
 
-fileUtils.dive = function dive(dir, opts, action, complete) {
+fileUtils.dive = function(dir, opts, action, complete) {
     var todo = 1;
 
     if (utils.isFunction(opts)) {
@@ -76,7 +76,7 @@ fileUtils.dive = function dive(dir, opts, action, complete) {
     }(dir));
 };
 
-fileUtils.diveSync = function dive(dir, opts, action) {
+fileUtils.diveSync = function(dir, opts, action) {
     var todo = 1;
 
     if (utils.isFunction(opts)) {

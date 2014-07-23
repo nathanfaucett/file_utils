@@ -1,4 +1,4 @@
-filePath
+fileUtils
 =======
 
-file path utils for the browser and node.js
+file utils for node.js
