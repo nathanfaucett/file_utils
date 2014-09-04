@@ -1,9 +1,22 @@
 var fs = require("fs"),
-    utils = require("utils"),
+    each = require("each"),
+    type = require("type"),
     filePath = require("file_path");
 
 
 var fileUtils = module.exports;
+
+
+function noop() {}
+
+function mixin(a, b) {
+    var key, value;
+
+    for (key in b) {
+        if (a[key] == null && (value = b[key]) != null) a[key] = value;
+    }
+    return a;
+}
 
 
 fileUtils.diveDefaults = {
@@ -16,21 +29,21 @@ fileUtils.diveDefaults = {
 fileUtils.dive = function(dir, opts, action, complete) {
     var todo = 1;
 
-    if (utils.isFunction(opts)) {
-        if (utils.isFunction(action)) {
+    if (type.isFunction(opts)) {
+        if (type.isFunction(action)) {
             complete = action;
         } else {
-            complete = utils.noop;
+            complete = noop;
         }
 
         action = opts;
         opts = {};
     } else if (complete == null) {
-        complete = utils.noop;
+        complete = noop;
     }
-    if (!utils.isString(dir)) dir = process.cwd();
+    if (!type.isString(dir)) dir = process.cwd();
 
-    utils.mixin(opts, fileUtils.diveDefaults);
+    mixin(opts, fileUtils.diveDefaults);
 
     (function doDive(dir) {
 
@@ -42,7 +55,7 @@ fileUtils.dive = function(dir, opts, action, complete) {
                 return;
             }
 
-            utils.each(files, function(file) {
+            each(files, function(file) {
                 if (opts.all || file[0] !== ".") {
                     var fullPath = filePath.resolve(dir, file),
                         stat;
@@ -86,13 +99,13 @@ fileUtils.dive = function(dir, opts, action, complete) {
 fileUtils.diveSync = function(dir, opts, action) {
     var todo = 1;
 
-    if (utils.isFunction(opts)) {
+    if (type.isFunction(opts)) {
         action = opts;
         opts = {};
     }
-    if (!utils.isString(dir)) dir = process.cwd();
+    if (!type.isString(dir)) dir = process.cwd();
 
-    utils.mixin(opts, fileUtils.diveDefaults);
+    mixin(opts, fileUtils.diveDefaults);
 
     (function doDive(dir) {
         todo--;
@@ -104,7 +117,7 @@ fileUtils.diveSync = function(dir, opts, action) {
             return;
         }
 
-        utils.each(files, function(file) {
+        each(files, function(file) {
             if (opts.all || file[0] !== ".") {
                 var fullPath = filePath.resolve(dir, file),
                     stat;
@@ -143,13 +156,13 @@ fileUtils.diveSync = function(dir, opts, action) {
 };
 
 fileUtils.mkdirP = function(path, mode, callback, made) {
-    if (utils.isFunction(mode)) {
+    if (type.isFunction(mode)) {
         callback = mode;
         mode = 511 & (~process.umask());
     }
     if (!made) made = null;
 
-    callback || (callback = utils.noop);
+    callback || (callback = noop);
     if (typeof(mode) === "string") mode = parseInt(mode, 8);
 
     fs.mkdir(path, mode, function(e) {
@@ -185,7 +198,7 @@ fileUtils.mkdirPSync = function(path, mode, made) {
     mode || (mode = 511 & (~process.umask()));
     made || (made = null);
 
-    if (utils.isString(mode)) mode = parseInt(mode, 8);
+    if (type.isString(mode)) mode = parseInt(mode, 8);
 
     try {
         fs.mkdirSync(path, mode);
@@ -208,7 +221,7 @@ fileUtils.mkdirPSync = function(path, mode, made) {
 };
 
 fileUtils.copyFile = function(from, to, mode, callback) {
-    if (utils.isFunction(mode)) {
+    if (type.isFunction(mode)) {
         callback = mode;
         mode = null;
     }
@@ -242,7 +255,7 @@ fileUtils.copyFile = function(from, to, mode, callback) {
 };
 
 fileUtils.copy = function(from, to, mode, callback) {
-    if (utils.isFunction(mode)) {
+    if (type.isFunction(mode)) {
         callback = mode;
         mode = null;
     }
