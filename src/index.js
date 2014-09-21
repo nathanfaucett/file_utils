@@ -18,7 +18,6 @@ function mixin(a, b) {
     return a;
 }
 
-
 fileUtils.diveDefaults = {
     all: false,
     recursive: true,
@@ -26,39 +25,36 @@ fileUtils.diveDefaults = {
     directories: false
 };
 
-fileUtils.dive = function(dir, opts, action, complete) {
-    var todo = 1;
+fileUtils.readDir = function(dir, opts, callback) {
+    var out = [],
+        todo = 1;
 
-    if (type.isFunction(opts)) {
-        if (type.isFunction(action)) {
-            complete = action;
-        } else {
-            complete = noop;
-        }
-
-        action = opts;
-        opts = {};
-    } else if (complete == null) {
-        complete = noop;
+    if (type.isObject(dir)) {
+        callback = opts;
+        opts = dir;
+        dir = process.cwd();
     }
-    if (!type.isString(dir)) dir = process.cwd();
+    if (type.isFunction(opts)) {
+        callback = opts;
+        opts = {};
+    }
 
-    mixin(opts, fileUtils.diveDefaults);
+    opts = mixin(opts || {}, fileUtils.diveDefaults);
 
     (function doDive(dir) {
-
         fs.readdir(dir, function(err, files) {
             todo--;
 
             if (err) {
-                action(err);
+                callback(err);
                 return;
             }
 
             each(files, function(file) {
+                var fullPath, stat;
+
                 if (opts.all || file[0] !== ".") {
-                    var fullPath = filePath.resolve(dir, file),
-                        stat;
+                    fullPath = filePath.resolve(dir, file);
 
                     todo++;
 
@@ -66,23 +62,26 @@ fileUtils.dive = function(dir, opts, action, complete) {
                         stat = fs.statSync(fullPath);
                     } catch (err) {
                         todo--;
-                        return action(err) !== false;
+                        callback(err);
+                        return false;
                     }
 
-                    if (stat) {
-                        if (stat.isDirectory()) {
-                            if (opts.directories) {
-                                todo--;
-                                return action(null, fullPath) !== false;
-                            }
-                            if (opts.recursive) doDive(fullPath);
-                        } else {
-                            if (opts.files) {
-                                todo--;
-                                return action(null, fullPath) !== false;
-                            }
-                            if (!--todo) complete();
+                    if (stat && stat.isDirectory()) {
+                        if (opts.directories) {
+                            todo--;
+                            stat.path = fullPath;
+                            out.push(stat);
+                            return true;
                         }
+                        if (opts.recursive) doDive(fullPath);
+                    } else {
+                        if (opts.files) {
+                            todo--;
+                            stat.path = fullPath;
+                            out.push(stat);
+                            return true;
+                        }
+                        if (!--todo) callback(null, out);
                     }
 
                     return true;
@@ -91,36 +90,38 @@ fileUtils.dive = function(dir, opts, action, complete) {
                 return true;
             });
 
-            if (!todo) complete();
+            if (!todo) callback(null, out);
         });
     }(dir));
 };
 
-fileUtils.diveSync = function(dir, opts, action) {
-    var todo = 1;
+fileUtils.readDirSync = function(dir, opts) {
+    var out = [],
+        todo = 1;
 
-    if (type.isFunction(opts)) {
-        action = opts;
-        opts = {};
+    if (type.isObject(dir)) {
+        opts = dir;
+        dir = process.cwd();
     }
-    if (!type.isString(dir)) dir = process.cwd();
 
-    mixin(opts, fileUtils.diveDefaults);
+    opts = mixin(opts || {}, fileUtils.diveDefaults);
 
     (function doDive(dir) {
-        todo--;
+        var files;
 
         try {
             files = fs.readdirSync(dir);
         } catch (err) {
-            action(err);
             return;
         }
 
+        todo--;
+
         each(files, function(file) {
+            var fullPath, stat;
+
             if (opts.all || file[0] !== ".") {
-                var fullPath = filePath.resolve(dir, file),
-                    stat;
+                fullPath = filePath.resolve(dir, file);
 
                 todo++;
 
@@ -128,22 +129,23 @@ fileUtils.diveSync = function(dir, opts, action) {
                     stat = fs.statSync(fullPath);
                 } catch (err) {
                     todo--;
-                    return action(err) !== false;
+                    return false;
                 }
 
-                if (stat) {
-                    if (stat.isDirectory()) {
-                        if (opts.directories) {
-                            todo--;
-                            return action(null, fullPath) !== false;
-                        }
-                        if (opts.recursive) doDive(fullPath);
-                    } else {
-                        if (opts.files) {
-                            todo--;
-                            return action(null, fullPath) !== false;
-                        }
-                        if (!--todo) complete();
+                if (stat && stat.isDirectory()) {
+                    if (opts.directories) {
+                        todo--;
+                        stat.path = fullPath;
+                        out.push(stat);
+                        return true;
+                    }
+                    if (opts.recursive) doDive(fullPath);
+                } else {
+                    if (opts.files) {
+                        todo--;
+                        stat.path = fullPath;
+                        out.push(stat);
+                        return true;
                     }
                 }
 
@@ -153,6 +155,65 @@ fileUtils.diveSync = function(dir, opts, action) {
             return true;
         });
     }(dir));
+
+    return out;
+};
+
+fileUtils.dive = function(dir, opts, action, callback) {
+    if (type.isFunction(opts)) {
+        callback = action;
+        action = opts;
+        opts = {};
+    }
+    if (!type.isFunction(callback)) callback = noop;
+
+    fileUtils.readDir(dir, opts, function(err, files) {
+        var tasks, index, length;
+
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        tasks = each.map(files, function(file) {
+            return function task(next) {
+                action(file, next);
+            };
+        });
+
+        length = tasks.length;
+        index = 0;
+
+        (function next(err) {
+            if (err || index >= length) {
+                callback(err);
+                return;
+            }
+
+            try {
+                tasks[index++](next);
+            } catch (e) {
+                callback(e);
+            }
+        }());
+    });
+};
+
+fileUtils.diveSync = function(dir, opts, action) {
+    if (type.isFunction(opts)) {
+        action = opts;
+        opts = {};
+    }
+
+    each(fileUtils.readDirSync(dir, opts), function(file) {
+        try {
+            action(file);
+        } catch (e) {
+            return false;
+        }
+
+        return true;
+    });
 };
 
 fileUtils.mkdirP = function(path, mode, callback, made) {
@@ -221,12 +282,13 @@ fileUtils.mkdirPSync = function(path, mode, made) {
 };
 
 fileUtils.copyFile = function(from, to, mode, callback) {
+    var called = false;
+
     if (type.isFunction(mode)) {
         callback = mode;
         mode = null;
     }
     mode || (mode = 511 & (~process.umask()));
-    var called = false;
 
     function done(err) {
         if (!called) {
@@ -236,18 +298,21 @@ fileUtils.copyFile = function(from, to, mode, callback) {
     }
 
     fileUtils.mkdirP(filePath.dir(to), mode, function(err, made) {
+        var read, write;
+
         if (err) {
             callback(err);
             return;
         }
-        var read = fs.createReadStream(from),
-            write = fs.createWriteStream(to);
+
+        read = fs.createReadStream(from),
+        write = fs.createWriteStream(to);
 
         read.on("error", done);
 
         write.on("error", done);
         write.on("close", function() {
-            done(null);
+            done();
         });
 
         read.pipe(write);
@@ -255,12 +320,13 @@ fileUtils.copyFile = function(from, to, mode, callback) {
 };
 
 fileUtils.copy = function(from, to, mode, callback) {
+    var called = false;
+
     if (type.isFunction(mode)) {
         callback = mode;
         mode = null;
     }
     mode || (mode = 511 & (~process.umask()));
-    var called = false;
 
     from = filePath.resolve(process.cwd(), from);
     to = filePath.resolve(process.cwd(), to);
@@ -282,24 +348,25 @@ fileUtils.copy = function(from, to, mode, callback) {
         }
 
         fileUtils.dive(from,
-            function(err, fullPath) {
-                if (err) {
-                    done(err);
-                    return false;
-                }
-
+            function(file, next) {
                 fileUtils.copyFile(
-                    fullPath,
-                    filePath.resolve(to, fullPath.substring(from.length)),
+                    file.path,
+                    filePath.resolve(to, file.path.substring(from.length)),
                     mode,
                     function(err) {
-                        if (err) console.warn(err.stack || err);
+                        if (err) {
+                            next(err);
+                            return;
+                        }
+                        next();
                     }
                 );
-
-                return true;
             },
-            function() {
+            function(err) {
+                if (err) {
+                    done(err);
+                    return;
+                }
                 done();
             }
         );
