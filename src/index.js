@@ -297,7 +297,7 @@ fileUtils.copyFile = function(from, to, mode, callback) {
         }
     }
 
-    fileUtils.mkdirP(filePath.dir(to), mode, function(err, made) {
+    fileUtils.mkdirP(filePath.dir(to), mode, function(err) {
         var read, write;
 
         if (err) {
@@ -341,7 +341,7 @@ fileUtils.copy = function(from, to, mode, callback) {
         }
     }
 
-    fileUtils.mkdirP(to, mode, function(err, made) {
+    fileUtils.mkdirP(to, mode, function(err) {
         if (err) {
             callback(err);
             return;
