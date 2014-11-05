@@ -1,22 +1,12 @@
 var fs = require("fs"),
     each = require("each"),
     type = require("type"),
+    utils = require("utils"),
     filePath = require("file_path");
 
 
 var fileUtils = module.exports;
 
-
-function noop() {}
-
-function mixin(a, b) {
-    var key, value;
-
-    for (key in b) {
-        if (a[key] == null && (value = b[key]) != null) a[key] = value;
-    }
-    return a;
-}
 
 fileUtils.diveDefaults = {
     all: false,
@@ -39,7 +29,7 @@ fileUtils.readDir = function(dir, opts, callback) {
         opts = {};
     }
 
-    opts = mixin(opts || {}, fileUtils.diveDefaults);
+    opts = utils.mixin(opts || {}, fileUtils.diveDefaults);
 
     (function doDive(dir) {
         fs.readdir(dir, function(err, files) {
@@ -104,7 +94,7 @@ fileUtils.readDirSync = function(dir, opts) {
         dir = process.cwd();
     }
 
-    opts = mixin(opts || {}, fileUtils.diveDefaults);
+    opts = utils.mixin(opts || {}, fileUtils.diveDefaults);
 
     (function doDive(dir) {
         var files;
@@ -165,7 +155,7 @@ fileUtils.dive = function(dir, opts, action, callback) {
         action = opts;
         opts = {};
     }
-    if (!type.isFunction(callback)) callback = noop;
+    if (!type.isFunction(callback)) callback = utils.noop;
 
     fileUtils.readDir(dir, opts, function(err, files) {
         var tasks, index, length,
@@ -229,7 +219,7 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
     }
     if (!made) made = null;
 
-    callback || (callback = noop);
+    callback || (callback = utils.noop);
 
     mode || (mode = 511 & (~process.umask()));
     if (typeof(mode) === "string") mode = parseInt(mode, 8);

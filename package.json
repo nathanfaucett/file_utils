@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "file_path": "nathanfaucett/file_path",
+    "utils": "nathanfaucett/utils",
     "each": "nathanfaucett/each",
     "type": "nathanfaucett/type"
   }
