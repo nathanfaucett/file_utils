@@ -168,7 +168,8 @@ fileUtils.dive = function(dir, opts, action, callback) {
     if (!type.isFunction(callback)) callback = noop;
 
     fileUtils.readDir(dir, opts, function(err, files) {
-        var tasks, index, length;
+        var tasks, index, length,
+            called;
 
         if (err) {
             callback(err);
@@ -183,9 +184,13 @@ fileUtils.dive = function(dir, opts, action, callback) {
 
         length = tasks.length;
         index = 0;
+        called = false
 
         (function next(err) {
+            if (called) return;
+
             if (err || index >= length) {
+                called = true;
                 callback(err);
                 return;
             }
@@ -193,6 +198,7 @@ fileUtils.dive = function(dir, opts, action, callback) {
             try {
                 tasks[index++](next);
             } catch (e) {
+                called = true;
                 callback(e);
             }
         }());
@@ -224,6 +230,8 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
     if (!made) made = null;
 
     callback || (callback = noop);
+
+    mode || (mode = 511 & (~process.umask()));
     if (typeof(mode) === "string") mode = parseInt(mode, 8);
 
     fs.mkdir(path, mode, function(e) {
@@ -279,6 +287,51 @@ fileUtils.mkdirPSync = function(path, mode, made) {
     }
 
     return made;
+};
+
+fileUtils.writeFile = function(filename, data, options, callback) {
+    if (type.isFunction(options)) {
+        callback = options;
+        options = {};
+    }
+
+    fileUtils.mkdirP(filePath.dir(filename), options.mode, function(err) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        fs.writeFile(filename, data, options, function(err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            callback(null);
+            return;
+        });
+    });
+};
+
+fileUtils.writeFileSync = function(filename, data, options) {
+    var made;
+
+    if (type.isFunction(options)) {
+        callback = options;
+        options = {};
+    }
+
+    made = fileUtils.mkdirPSync(filePath.dir(filename), options.mode);
+    if (!made) {
+        return false;
+    }
+
+    try {
+        fs.writeFileSync(filename, data, options);
+    } catch (e) {
+        return false;
+    }
+
+    return true;
 };
 
 fileUtils.copyFile = function(from, to, mode, callback) {
