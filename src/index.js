@@ -8,7 +8,7 @@ var fs = require("fs"),
 var fileUtils = module.exports;
 
 
-fileUtils.diveDefaults = {
+fileUtils.defaults = {
     all: false,
     recursive: true,
     files: true,
@@ -29,7 +29,7 @@ fileUtils.readDir = function(dir, opts, callback) {
         opts = {};
     }
 
-    opts = utils.mixin(opts || {}, fileUtils.diveDefaults);
+    opts = utils.mixin(opts || {}, fileUtils.defaults);
 
     (function doDive(dir) {
         fs.readdir(dir, function(err, files) {
