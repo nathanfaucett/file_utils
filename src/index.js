@@ -305,8 +305,7 @@ fileUtils.writeFile = function(filename, data, options, callback) {
 fileUtils.writeFileSync = function(filename, data, options) {
     var made;
 
-    if (type.isFunction(options)) {
-        callback = options;
+    if (!type.isObject(options)) {
         options = {};
     }
 
