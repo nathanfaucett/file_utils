@@ -71,7 +71,7 @@ fileUtils.readDir = function(dir, opts, callback) {
                             out.push(stat);
                             return true;
                         }
-                        if (!--todo) callback(null, out);
+                        if (!--todo) callback(undefined, out);
                     }
 
                     return true;
@@ -80,7 +80,7 @@ fileUtils.readDir = function(dir, opts, callback) {
                 return true;
             });
 
-            if (!todo) callback(null, out);
+            if (!todo) callback(undefined, out);
         });
     }(dir));
 };
@@ -227,7 +227,7 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
     fs.mkdir(path, mode, function(e) {
         if (!e) {
             made || (made = path);
-            callback(null, made);
+            callback(undefined, made);
             return;
         }
 
@@ -244,7 +244,7 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
                 if (err || !stat.isDirectory()) {
                     callback(err, made);
                 } else {
-                    callback(null, made);
+                    callback(undefined, made);
                 }
             });
         }
@@ -280,38 +280,58 @@ fileUtils.mkdirPSync = function(path, mode, made) {
 };
 
 fileUtils.writeFile = function(filename, data, options, callback) {
+    var dirname;
+
     if (type.isFunction(options)) {
         callback = options;
         options = {};
     }
 
-    fileUtils.mkdirP(filePath.dir(filename), options.mode, function(err) {
-        if (err) {
-            callback(err);
-            return;
-        }
+    dirname = filePath.dir(filename);
 
-        fs.writeFile(filename, data, options, function(err) {
+    fs.stat(dirname, function(err, stat) {
+
+        function writeFile(err) {
             if (err) {
                 callback(err);
                 return;
             }
-            callback(null);
-            return;
-        });
+
+            fs.writeFile(filename, data, options, function(err) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                callback(undefined);
+                return;
+            });
+        }
+
+        if (!stat || !stat.isDirectory()) {
+            fileUtils.mkdirP(filePath.dir(filename), options.mode, writeFile);
+        } else {
+            writeFile();
+        }
     });
 };
 
 fileUtils.writeFileSync = function(filename, data, options) {
-    var made;
+    var dirname, stat, made;
 
     if (!type.isObject(options)) {
         options = {};
     }
 
-    made = fileUtils.mkdirPSync(filePath.dir(filename), options.mode);
-    if (!made) {
-        return false;
+    dirname = filePath.dir(filename);
+    try {
+        stat = fs.statSync(dirname);
+    } catch (e) {}
+
+    if (!stat || !stat.isDirectory()) {
+        made = fileUtils.mkdirPSync(dirname, options.mode);
+        if (!made) {
+            return false;
+        }
     }
 
     try {
