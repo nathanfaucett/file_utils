@@ -1,0 +1,40 @@
+{
+  "name": "for_each",
+  "version": "0.0.1",
+  "description": "for_each for the browser and node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanfaucett/for_each.git"
+  },
+  "main": "src/index.js",
+  "keywords": [
+    "for_each",
+    "for_each.js"
+  ],
+  "author": {
+    "name": "Nathan Faucett"
+  },
+  "license": "BSD-2-Clause",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-jsbeautifier": "^0.2.7",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "is_array_like": "git+https://github.com/nathanfaucett/is_array_like",
+    "is_null_or_undefined": "git+https://github.com/nathanfaucett/is_null_or_undefined",
+    "fast_bind_this": "git+https://github.com/nathanfaucett/fast_bind_this",
+    "keys": "git+https://github.com/nathanfaucett/keys"
+  },
+  "readme": "forEach\n=======\n\nforEach for the browser and node.js\n",
+  "bugs": {
+    "url": "https://github.com/nathanfaucett/for_each/issues"
+  },
+  "homepage": "https://github.com/nathanfaucett/for_each",
+  "_id": "for_each@0.0.1",
+  "_shasum": "14e34841de67720d616757562fe88684d3d4cc28",
+  "_resolved": "git+https://github.com/nathanfaucett/for_each#6a9ec1778c7bb59c8a21c36d4d977ea5246fa731",
+  "_from": "for_each@git+https://github.com/nathanfaucett/for_each"
+}

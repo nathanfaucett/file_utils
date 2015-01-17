@@ -27,8 +27,12 @@
   },
   "dependencies": {
     "file_path": "nathanfaucett/file_path",
-    "utils": "nathanfaucett/utils",
-    "each": "nathanfaucett/each",
+    "map": "nathanfaucett/map",
+    "for_each": "nathanfaucett/for_each",
+    "mixin": "nathanfaucett/mixin",
+    "is_object": "nathanfaucett/is_object",
+    "is_function": "nathanfaucett/is_function",
+    "is_string": "nathanfaucett/is_string",
     "type": "nathanfaucett/type"
   }
 }

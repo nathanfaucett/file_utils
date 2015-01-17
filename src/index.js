@@ -1,7 +1,11 @@
 var fs = require("fs"),
-    each = require("each"),
-    type = require("type"),
-    utils = require("utils"),
+    map = require("map"),
+    forEach = require("for_each"),
+    mixin = require("mixin"),
+    isObject = require("is_object"),
+    isFunction = require("is_function"),
+    isString = require("is_string"),
+    mixin = require("mixin"),
     filePath = require("file_path");
 
 
@@ -19,17 +23,17 @@ fileUtils.readDir = function(dir, opts, callback) {
     var out = [],
         todo = 1;
 
-    if (type.isObject(dir)) {
+    if (isObject(dir)) {
         callback = opts;
         opts = dir;
         dir = process.cwd();
     }
-    if (type.isFunction(opts)) {
+    if (isFunction(opts)) {
         callback = opts;
         opts = {};
     }
 
-    opts = utils.mixin(opts || {}, fileUtils.defaults);
+    opts = mixin(opts || {}, fileUtils.defaults);
 
     (function doDive(dir) {
         fs.readdir(dir, function(err, files) {
@@ -40,7 +44,7 @@ fileUtils.readDir = function(dir, opts, callback) {
                 return;
             }
 
-            each(files, function(file) {
+            forEach(files, function(file) {
                 var fullPath, stat;
 
                 if (opts.all || file[0] !== ".") {
@@ -71,7 +75,10 @@ fileUtils.readDir = function(dir, opts, callback) {
                             out.push(stat);
                             return true;
                         }
-                        if (!--todo) callback(undefined, out);
+                        if (!--todo) {
+                            callback(undefined, out);
+                            return false;
+                        }
                     }
 
                     return true;
@@ -80,7 +87,9 @@ fileUtils.readDir = function(dir, opts, callback) {
                 return true;
             });
 
-            if (!todo) callback(undefined, out);
+            if (!todo) {
+                callback(undefined, out);
+            }
         });
     }(dir));
 };
@@ -89,12 +98,12 @@ fileUtils.readDirSync = function(dir, opts) {
     var out = [],
         todo = 1;
 
-    if (type.isObject(dir)) {
+    if (isObject(dir)) {
         opts = dir;
         dir = process.cwd();
     }
 
-    opts = utils.mixin(opts || {}, fileUtils.diveDefaults);
+    opts = mixin(opts || {}, fileUtils.diveDefaults);
 
     (function doDive(dir) {
         var files;
@@ -107,7 +116,7 @@ fileUtils.readDirSync = function(dir, opts) {
 
         todo--;
 
-        each(files, function(file) {
+        forEach(files, function(file) {
             var fullPath, stat;
 
             if (opts.all || file[0] !== ".") {
@@ -150,12 +159,14 @@ fileUtils.readDirSync = function(dir, opts) {
 };
 
 fileUtils.dive = function(dir, opts, action, callback) {
-    if (type.isFunction(opts)) {
+    if (isFunction(opts)) {
         callback = action;
         action = opts;
         opts = {};
     }
-    if (!type.isFunction(callback)) callback = utils.noop;
+    if (!isFunction(callback)) {
+        callback = noop;
+    }
 
     fileUtils.readDir(dir, opts, function(err, files) {
         var tasks, index, length,
@@ -166,7 +177,7 @@ fileUtils.dive = function(dir, opts, action, callback) {
             return;
         }
 
-        tasks = each.map(files, function(file) {
+        tasks = map(files, function(file) {
             return function task(next) {
                 action(file, next);
             };
@@ -174,10 +185,12 @@ fileUtils.dive = function(dir, opts, action, callback) {
 
         length = tasks.length;
         index = 0;
-        called = false
+        called = false;
 
         (function next(err) {
-            if (called) return;
+            if (called) {
+                return;
+            }
 
             if (err || index >= length) {
                 called = true;
@@ -196,12 +209,12 @@ fileUtils.dive = function(dir, opts, action, callback) {
 };
 
 fileUtils.diveSync = function(dir, opts, action) {
-    if (type.isFunction(opts)) {
+    if (isFunction(opts)) {
         action = opts;
         opts = {};
     }
 
-    each(fileUtils.readDirSync(dir, opts), function(file) {
+    forEach(fileUtils.readDirSync(dir, opts), function(file) {
         try {
             action(file);
         } catch (e) {
@@ -213,16 +226,18 @@ fileUtils.diveSync = function(dir, opts, action) {
 };
 
 fileUtils.mkdirP = function(path, mode, callback, made) {
-    if (type.isFunction(mode)) {
+    if (isFunction(mode)) {
         callback = mode;
         mode = 511 & (~process.umask());
     }
     if (!made) made = null;
 
-    callback || (callback = utils.noop);
+    callback || (callback = noop);
 
     mode || (mode = 511 & (~process.umask()));
-    if (typeof(mode) === "string") mode = parseInt(mode, 8);
+    if (isString(mode)) {
+        mode = parseInt(mode, 8);
+    }
 
     fs.mkdir(path, mode, function(e) {
         if (!e) {
@@ -257,7 +272,7 @@ fileUtils.mkdirPSync = function(path, mode, made) {
     mode || (mode = 511 & (~process.umask()));
     made || (made = null);
 
-    if (type.isString(mode)) mode = parseInt(mode, 8);
+    if (isString(mode)) mode = parseInt(mode, 8);
 
     try {
         fs.mkdirSync(path, mode);
@@ -282,7 +297,7 @@ fileUtils.mkdirPSync = function(path, mode, made) {
 fileUtils.writeFile = function(filename, data, options, callback) {
     var dirname;
 
-    if (type.isFunction(options)) {
+    if (isFunction(options)) {
         callback = options;
         options = {};
     }
@@ -318,7 +333,7 @@ fileUtils.writeFile = function(filename, data, options, callback) {
 fileUtils.writeFileSync = function(filename, data, options) {
     var dirname, stat, made;
 
-    if (!type.isObject(options)) {
+    if (!isObject(options)) {
         options = {};
     }
 
@@ -346,7 +361,7 @@ fileUtils.writeFileSync = function(filename, data, options) {
 fileUtils.copyFile = function(from, to, mode, callback) {
     var called = false;
 
-    if (type.isFunction(mode)) {
+    if (isFunction(mode)) {
         callback = mode;
         mode = null;
     }
@@ -384,17 +399,22 @@ fileUtils.copyFile = function(from, to, mode, callback) {
 fileUtils.copy = function(from, to, mode, callback) {
     var called = false;
 
-    if (type.isFunction(mode)) {
+    if (isFunction(mode)) {
         callback = mode;
         mode = null;
     }
+
     mode || (mode = 511 & (~process.umask()));
 
     from = filePath.resolve(process.cwd(), from);
     to = filePath.resolve(process.cwd(), to);
 
-    if (from[from.length - 1] !== "/") from += "/";
-    if (to[to.length - 1] !== "/") to += "/";
+    if (from[from.length - 1] !== "/") {
+        from += "/";
+    }
+    if (to[to.length - 1] !== "/") {
+        to += "/";
+    }
 
     function done(err) {
         if (!called) {

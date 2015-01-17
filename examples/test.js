@@ -21,10 +21,11 @@ fileUtils.diveSync(__dirname + "/../node_modules/each", function(file) {
 });
 */
 
-fileUtils.copy(__dirname + "/../node_modules/each", __dirname + "/each", function(err) {
+console.time("copied");
+fileUtils.copy(__dirname + "/../node_modules/for_each", __dirname + "/for_each", function(err) {
     if (err) {
         console.log(err);
     }
 
-    console.log("copy");
+    console.timeEnd("copied");
 });
