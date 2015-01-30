@@ -1,11 +1,11 @@
 var fs = require("fs"),
     map = require("map"),
     forEach = require("for_each"),
-    mixin = require("mixin"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
     isString = require("is_string"),
     mixin = require("mixin"),
+    emptyFunction = require("empty_function"),
     filePath = require("file_path");
 
 
@@ -165,7 +165,7 @@ fileUtils.dive = function(dir, opts, action, callback) {
         opts = {};
     }
     if (!isFunction(callback)) {
-        callback = noop;
+        callback = emptyFunction;
     }
 
     fileUtils.readDir(dir, opts, function(err, files) {
@@ -232,7 +232,7 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
     }
     if (!made) made = null;
 
-    callback || (callback = noop);
+    callback = callback || emptyFunction;
 
     mode || (mode = 511 & (~process.umask()));
     if (isString(mode)) {
