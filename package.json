@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "file_path": "nathanfaucett/file_path",
+    "empty_function": "nathanfaucett/empty_function",
     "map": "nathanfaucett/map",
     "for_each": "nathanfaucett/for_each",
     "mixin": "nathanfaucett/mixin",
