@@ -1,6 +1,6 @@
 var fs = require("fs"),
     map = require("map"),
-    forEach = require("for_each"),
+    arrayForEach = require("array-for_each"),
     isObject = require("is_object"),
     isFunction = require("is_function"),
     isString = require("is_string"),
@@ -9,7 +9,7 @@ var fs = require("fs"),
     filePath = require("file_path");
 
 
-var fileUtils = module.exports;
+var fileUtils = exports;
 
 
 fileUtils.defaults = {
@@ -44,7 +44,7 @@ fileUtils.readDir = function(dir, opts, callback) {
                 return;
             }
 
-            forEach(files, function(file) {
+            arrayForEach(files, function(file) {
                 var fullPath, stat;
 
                 if (opts.all || file[0] !== ".") {
@@ -67,7 +67,9 @@ fileUtils.readDir = function(dir, opts, callback) {
                             out.push(stat);
                             return true;
                         }
-                        if (opts.recursive) doDive(fullPath);
+                        if (opts.recursive) {
+                            doDive(fullPath);
+                        }
                     } else {
                         if (opts.files) {
                             todo--;
@@ -103,20 +105,15 @@ fileUtils.readDirSync = function(dir, opts) {
         dir = process.cwd();
     }
 
-    opts = mixin(opts || {}, fileUtils.diveDefaults);
+    opts = mixin(opts || {}, fileUtils.defaults);
 
     (function doDive(dir) {
         var files;
 
-        try {
-            files = fs.readdirSync(dir);
-        } catch (err) {
-            return;
-        }
-
+        files = fs.readdirSync(dir);
         todo--;
 
-        forEach(files, function(file) {
+        arrayForEach(files, function(file) {
             var fullPath, stat;
 
             if (opts.all || file[0] !== ".") {
@@ -138,13 +135,18 @@ fileUtils.readDirSync = function(dir, opts) {
                         out.push(stat);
                         return true;
                     }
-                    if (opts.recursive) doDive(fullPath);
+                    if (opts.recursive) {
+                        doDive(fullPath);
+                    }
                 } else {
                     if (opts.files) {
                         todo--;
                         stat.path = fullPath;
                         out.push(stat);
                         return true;
+                    }
+                    if (!--todo) {
+                        return false;
                     }
                 }
 
@@ -214,15 +216,7 @@ fileUtils.diveSync = function(dir, opts, action) {
         opts = {};
     }
 
-    forEach(fileUtils.readDirSync(dir, opts), function(file) {
-        try {
-            action(file);
-        } catch (e) {
-            return false;
-        }
-
-        return true;
-    });
+    arrayForEach(fileUtils.readDirSync(dir, opts), action);
 };
 
 fileUtils.mkdirP = function(path, mode, callback, made) {
@@ -230,7 +224,9 @@ fileUtils.mkdirP = function(path, mode, callback, made) {
         callback = mode;
         mode = 511 & (~process.umask());
     }
-    if (!made) made = null;
+    if (!made) {
+        made = null;
+    }
 
     callback = callback || emptyFunction;
 
@@ -272,11 +268,13 @@ fileUtils.mkdirPSync = function(path, mode, made) {
     mode || (mode = 511 & (~process.umask()));
     made || (made = null);
 
-    if (isString(mode)) mode = parseInt(mode, 8);
+    if (isString(mode)) {
+        mode = parseInt(mode, 8);
+    }
 
     try {
         fs.mkdirSync(path, mode);
-        made || (made = path);
+        made = made || path;
     } catch (e) {
         if (e.code === "ENOENT") {
             made = fileUtils.mkdirPSync(filePath.dir(path), mode, made);
@@ -287,7 +285,9 @@ fileUtils.mkdirPSync = function(path, mode, made) {
             } catch (err) {
                 throw e;
             }
-            if (!stat.isDirectory()) throw e;
+            if (!stat.isDirectory()) {
+                throw e;
+            }
         }
     }
 
@@ -383,7 +383,7 @@ fileUtils.copyFile = function(from, to, mode, callback) {
         }
 
         read = fs.createReadStream(from),
-        write = fs.createWriteStream(to);
+            write = fs.createWriteStream(to);
 
         read.on("error", done);
 
