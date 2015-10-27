@@ -42,7 +42,6 @@
     "mixin": "git://github.com/nathanfaucett/mixin.git",
     "is_object": "git://github.com/nathanfaucett/is_object.git",
     "is_function": "git://github.com/nathanfaucett/is_function.git",
-    "is_string": "git://github.com/nathanfaucett/is_string.git",
-    "type": "git://github.com/nathanfaucett/type.git"
+    "is_string": "git://github.com/nathanfaucett/is_string.git"
   }
 }
