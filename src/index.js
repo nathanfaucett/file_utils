@@ -1,12 +1,12 @@
 var fs = require("fs"),
-    map = require("map"),
-    arrayForEach = require("array-for_each"),
-    isObject = require("is_object"),
-    isFunction = require("is_function"),
-    isString = require("is_string"),
-    mixin = require("mixin"),
-    emptyFunction = require("empty_function"),
-    filePath = require("file_path");
+    arrayMap = require("@nathanfaucett/array-map"),
+    arrayForEach = require("@nathanfaucett/array-for_each"),
+    isObject = require("@nathanfaucett/is_object"),
+    isFunction = require("@nathanfaucett/is_function"),
+    isString = require("@nathanfaucett/is_string"),
+    mixin = require("@nathanfaucett/mixin"),
+    emptyFunction = require("@nathanfaucett/empty_function"),
+    filePath = require("@nathanfaucett/file_path");
 
 
 var fileUtils = exports;
@@ -179,7 +179,7 @@ fileUtils.dive = function(dir, opts, action, callback) {
             return;
         }
 
-        tasks = map(files, function(file) {
+        tasks = arrayMap(files, function(file) {
             return function task(next) {
                 action(file, next);
             };

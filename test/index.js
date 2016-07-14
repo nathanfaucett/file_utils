@@ -1,5 +1,5 @@
 var tape = require("tape"),
-    filePath = require("file_path"),
+    filePath = require("@nathanfaucett/file_path"),
     fileUtils = require("..");
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "file_utils",
+  "name": "@nathanfaucett/file_utils",
   "version": "0.0.1",
   "description": "file utils for node.js",
   "repository": {
@@ -26,22 +26,22 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "file_path": "git://github.com/nathanfaucett/file_path.git",
-    "grunt": "",
-    "grunt-contrib-jshint": "^0.10.0",
+    "@nathanfaucett/file_path": "^0.0.2",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
     "grunt-jsbeautifier": "",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.0",
     "zuul": "^3.3.0"
   },
   "dependencies": {
-    "file_path": "git://github.com/nathanfaucett/file_path.git",
-    "empty_function": "git://github.com/nathanfaucett/empty_function.git",
-    "map": "git://github.com/nathanfaucett/map.git",
-    "array-for_each": "git://github.com/nathanfaucett/array-for_each.git",
-    "mixin": "git://github.com/nathanfaucett/mixin.git",
-    "is_object": "git://github.com/nathanfaucett/is_object.git",
-    "is_function": "git://github.com/nathanfaucett/is_function.git",
-    "is_string": "git://github.com/nathanfaucett/is_string.git"
+    "@nathanfaucett/file_path": "^0.0.2",
+    "@nathanfaucett/empty_function": "^0.0.1",
+    "@nathanfaucett/array-map": "^0.0.1",
+    "@nathanfaucett/array-for_each": "^0.0.1",
+    "@nathanfaucett/mixin": "^0.0.1",
+    "@nathanfaucett/is_object": "^0.0.1",
+    "@nathanfaucett/is_function": "^0.0.1",
+    "@nathanfaucett/is_string": "^0.0.1"
   }
 }
