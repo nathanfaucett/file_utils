@@ -4,7 +4,7 @@ var fs = require("fs"),
     isFunction = require("@nathanfaucett/is_function"),
     mixin = require("@nathanfaucett/mixin"),
     filePath = require("@nathanfaucett/file_path"),
-    fileUtils = require(".");
+    fileUtils = require("./");
 
 
 module.exports = readDir;

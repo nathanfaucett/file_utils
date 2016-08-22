@@ -3,7 +3,7 @@ var fs = require("fs"),
     isObject = require("@nathanfaucett/is_object"),
     mixin = require("@nathanfaucett/mixin"),
     filePath = require("@nathanfaucett/file_path"),
-    fileUtils = require(".");
+    fileUtils = require("./");
 
 
 module.exports = readDirSync;

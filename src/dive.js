@@ -4,13 +4,7 @@ var arrayMap = require("@nathanfaucett/array-map"),
     readDir = require("./readDir");
 
 
-var fileUtils;
-
-
 module.exports = dive;
-
-
-fileUtils = require(".");
 
 
 function dive(directory, options, action, callback) {
