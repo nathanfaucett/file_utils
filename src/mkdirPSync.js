@@ -10,10 +10,12 @@ function mkdirPSync(path, mode, made) {
     var stat;
 
     mode = mode || (mode = 511 & (~process.umask()));
-    made = made || (made = null);
-
     if (isString(mode)) {
         mode = parseInt(mode, 8);
+    }
+
+    if (!made) {
+        made = null;
     }
 
     try {
@@ -21,7 +23,7 @@ function mkdirPSync(path, mode, made) {
         made = made || path;
     } catch (e) {
         if (e.code === "ENOENT") {
-            made = mkdirPSync(filePath.directory(path), mode, made);
+            made = mkdirPSync(filePath.dirname(path), mode, made);
             mkdirPSync(path, mode, made);
         } else {
             try {

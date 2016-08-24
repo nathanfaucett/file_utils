@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/file_utils",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "file utils for node.js",
   "repository": {
     "type": "git",
@@ -26,16 +26,15 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@nathanfaucett/file_path": "^0.0.2",
-    "grunt": "^1.0.1",
-    "grunt-contrib-jshint": "^1.0.0",
-    "grunt-jsbeautifier": "",
+    "@nathanfaucett/task": "^0.0.5",
+    "gulp-jsbeautifier": "^2.0.3",
+    "gulp-jshint": "^2.0.1",
+    "jshint": "^2.9.3",
     "tap-spec": "^4.1.0",
-    "tape": "^4.2.0",
-    "zuul": "^3.3.0"
+    "tape": "^4.2.0"
   },
   "dependencies": {
-    "@nathanfaucett/file_path": "^0.0.2",
+    "@nathanfaucett/file_path": "^0.0.3",
     "@nathanfaucett/empty_function": "^0.0.1",
     "@nathanfaucett/array-map": "^0.0.1",
     "@nathanfaucett/array-for_each": "^0.0.1",

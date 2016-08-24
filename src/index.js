@@ -1,3 +1,6 @@
+var fs = require("fs");
+
+
 var fileUtils = exports;
 
 
@@ -17,4 +20,13 @@ fileUtils.writeFile = require("./writeFile");
 fileUtils.writeFileSync = require("./writeFileSync");
 
 fileUtils.copyFile = require("./copyFile");
+fileUtils.copyFileSync = require("./copyFileSync");
+
 fileUtils.copy = require("./copy");
+fileUtils.copySync = require("./copySync");
+
+fileUtils.remove = require("./remove");
+fileUtils.removeSync = require("./removeSync");
+
+fileUtils.stat = fs.stat;
+fileUtils.statSync = fs.statSync;

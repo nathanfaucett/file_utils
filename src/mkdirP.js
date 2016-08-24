@@ -26,11 +26,11 @@ function mkdirP(path, mode, callback, made) {
 
     fs.mkdir(path, mode, function(e) {
         if (!e) {
-            made || (made = path);
+            made = made || path;
             callback(undefined, made);
         } else {
             if (e.code === "ENOENT") {
-                mkdirP(filePath.directory(path), mode, function onMkdirP(error, made) {
+                mkdirP(filePath.dirname(path), mode, function onMkdirP(error, made) {
                     if (error) {
                         callback(error, made);
                     } else {

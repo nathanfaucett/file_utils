@@ -1,7 +1,8 @@
 var isFunction = require("@nathanfaucett/is_function"),
     filePath = require("@nathanfaucett/file_path"),
     mkdirP = require("./mkdirP"),
-    dive = require("./dive");
+    dive = require("./dive"),
+    copyFile = require("./copyFile");
 
 
 module.exports = copy;
@@ -40,7 +41,7 @@ function copy(from, to, mode, callback) {
         } else {
             dive(from,
                 function onAction(file, next) {
-                    fileUtils.copyFile(
+                    copyFile(
                         file.path,
                         filePath.resolve(to, file.path.substring(from.length)),
                         mode,

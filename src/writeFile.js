@@ -15,7 +15,7 @@ function writeFile(filename, data, options, callback) {
         options = {};
     }
 
-    dirname = filePath.directory(filename);
+    dirname = filePath.dirname(filename);
 
     fs.stat(dirname, function onStat(error, stat) {
 
@@ -34,7 +34,7 @@ function writeFile(filename, data, options, callback) {
         }
 
         if (!stat || !stat.isDirectory()) {
-            mkdirP(filePath.directory(filename), options.mode, writeFile);
+            mkdirP(filePath.dirname(filename), options.mode, writeFile);
         } else {
             writeFile();
         }

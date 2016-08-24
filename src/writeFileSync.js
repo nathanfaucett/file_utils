@@ -8,29 +8,20 @@ module.exports = writeFileSync;
 
 
 function writeFileSync(filename, data, options) {
-    var dirname, stat, made;
+    var dirname, stat;
 
     if (!isObject(options)) {
         options = {};
     }
 
-    dirname = filePath.directory(filename);
+    dirname = filePath.dirname(filename);
     try {
         stat = fs.statSync(dirname);
     } catch (e) {}
 
     if (!stat || !stat.isDirectory()) {
-        made = mkdirPSync(dirname, options.mode);
-        if (!made) {
-            return false;
-        }
+        mkdirPSync(dirname, options.mode);
     }
 
-    try {
-        fs.writeFileSync(filename, data, options);
-    } catch (e) {
-        return false;
-    }
-
-    return true;
+    fs.writeFileSync(filename, data, options);
 }

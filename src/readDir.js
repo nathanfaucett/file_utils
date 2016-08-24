@@ -50,7 +50,7 @@ function readDir(directory, options, callback) {
                         }
 
                         if (stat && stat.isDirectory()) {
-                            if (options.directoryectories) {
+                            if (options.directories) {
                                 todo--;
                                 stat.path = fullPath;
                                 out.push(stat);

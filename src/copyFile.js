@@ -23,7 +23,7 @@ function copyFile(from, to, mode, callback) {
         }
     }
 
-    mkdirP(filePath.directory(to), mode, function onMkdirP(error) {
+    mkdirP(filePath.dirname(to), mode, function onMkdirP(error) {
         var read, write;
 
         if (error) {
