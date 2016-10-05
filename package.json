@@ -26,7 +26,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@nathanfaucett/task": "^0.0.5",
+    "@nathanfaucett/task": "^0.0.7",
     "gulp-jsbeautifier": "^2.0.3",
     "gulp-jshint": "^2.0.1",
     "jshint": "^2.9.3",
@@ -34,11 +34,11 @@
     "tape": "^4.2.0"
   },
   "dependencies": {
-    "@nathanfaucett/file_path": "^0.0.3",
+    "@nathanfaucett/file_path": "^0.0.4",
     "@nathanfaucett/empty_function": "^0.0.1",
     "@nathanfaucett/array-map": "^0.0.1",
     "@nathanfaucett/array-for_each": "^0.0.1",
-    "@nathanfaucett/mixin": "^0.0.1",
+    "@nathanfaucett/mixin": "^0.0.2",
     "@nathanfaucett/is_object": "^0.0.1",
     "@nathanfaucett/is_function": "^0.0.1",
     "@nathanfaucett/is_string": "^0.0.1"
